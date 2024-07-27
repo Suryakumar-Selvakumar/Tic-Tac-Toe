@@ -9,6 +9,8 @@ paraDisplay.setAttribute("id", "para-display");
 
 btnArea.append(playBtn, paraDisplay);
 
+const gameBoardContainer = document.querySelector(".content");
+
 const gameBoard = (function () {
   let board = [
     ["", "", ""],
@@ -16,27 +18,9 @@ const gameBoard = (function () {
     ["", "", ""],
   ];
 
-  function viewBoard() {
-    console.table(board);
-  }
-
   function insertMarker(player, row, column) {
     if (board[row][column] === "X" || board[row][column] === "O") {
-      let rowNew, columnNew;
-      do {
-        alert("Position occupied by marker, pick another position!");
-        do {
-          rowNew = parseInt(prompt("Enter Marker row: "), 10);
-        } while (!(rowNew >= 0 && rowNew < 3) && !rowNew === null);
-        do {
-          columnNew = parseInt(prompt("Enter Marker column: "), 10);
-        } while (!(columnNew >= 0 && columnNew < 3) && !columnNew === null);
-      } while (rowNew === row && columnNew === column);
-      if (player === "p1") {
-        board[rowNew][columnNew] = "X";
-      } else if (player === "p2") {
-        board[rowNew][columnNew] = "O";
-      }
+      paraDisplay.textContent = "Oops, Tile Occupied!";
     } else {
       if (player === "p1") {
         board[row][column] = "X";
@@ -95,7 +79,7 @@ const gameBoard = (function () {
     }
   }
 
-  return { viewBoard, insertMarker, switchTurn, winCheck, tieCheck };
+  return { board, insertMarker, switchTurn, winCheck, tieCheck };
 })();
 
 function playerCreator(marker) {
@@ -103,56 +87,84 @@ function playerCreator(marker) {
     return marker;
   }
 
-  function getMarkerPosition() {
-    let row, column;
-    do {
-      row = parseInt(prompt("Enter Marker row: "), 10);
-    } while (!(row >= 0 && row < 3) && !row === null);
-    do {
-      column = parseInt(prompt("Enter Marker column: "), 10);
-    } while (!(column >= 0 && column < 3) && !column === null);
-    return [row, column];
-  }
+  // function getMarkerPosition() {
+  //   gameBoardContainer.addEventListener("click", (event) => {
+  //     if (event.target.tagName === "DIV") {
+  //       const row = event.target.getAttribute("data-row");
+  //       const column = event.target.getAttribute("data-column");
+  //       return [row, column];
+  //     }
+  //   });
+  // let row, column;
+  // do {
+  //   row = parseInt(prompt("Enter Marker row: "), 10);
+  // } while (!(row >= 0 && row < 3) && !row === null);
+  // do {
+  //   column = parseInt(prompt("Enter Marker column: "), 10);
+  // } while (!(column >= 0 && column < 3) && !column === null);
+  // return [row, column];
+  // }
 
-  return { setMarker, getMarkerPosition };
+  return { setMarker };
 }
 
+let player = "p1";
+let row, column;
+
+gameBoardContainer.addEventListener("click", (event) => {
+  if (event.target.tagName === "DIV") {
+    row = event.target.getAttribute("data-row");
+    column = event.target.getAttribute("data-column");
+    if (event.target.textContent === "X" || event.target.textContent === "O") {
+      paraDisplay.textContent = "Oops, Tile Occupied! Click another tile";
+    } else {
+      if (player === "p1") {
+        event.target.textContent = "X";
+      } else if (player === "p2") {
+        event.target.textContent = "O";
+      }
+    }
+  }
+});
+
+paraDisplay.textContent = "Click Play! P1: X | P2: O";
+
 function playGame() {
-  let player = "p1";
+  btnArea.removeChild(playBtn);
+
   const player1 = playerCreator("X");
   const player2 = playerCreator("O");
-  console.log("Player 1: X | Player 2: O");
   let winStatus = false;
   let tieStatus = false;
   let currentMarker = "";
-  let row = 0,
-    column = 0;
+
   do {
     if (player === "p1") {
-      console.log("Enter player 1's marker (X) position in the prompt");
-      [row, column] = player1.getMarkerPosition();
+      paraDisplay.textContent = "P1's turn, Click a tile to place 'X'";
       currentMarker = player1.setMarker();
+      gameBoard.insertMarker(player, row, column);
     } else if (player === "p2") {
-      console.log("Enter player 2's marker (O) position in the prompt");
-      [row, column] = player2.getMarkerPosition();
+      paraDisplay.textContent = "P2's turn, Click a tile to place 'O'";
       currentMarker = player2.setMarker();
+      gameBoard.insertMarker(player, row, column);
     }
-    gameBoard.insertMarker(player, row, column);
-    gameBoard.viewBoard();
+
     winStatus = gameBoard.winCheck(currentMarker, row, column);
     tieStatus = gameBoard.tieCheck(winStatus);
     player = gameBoard.switchTurn(player);
   } while (!winStatus && !tieStatus);
 
   if (tieStatus === true) {
-    console.log("It's a Tie!");
+    paraDisplay.textContent = "It's a Tie!";
   } else {
     if (currentMarker === "X") {
-      console.log("Player-1(X) has won the game!");
+      paraDisplay.textContent = "P1(X) has won the Game!";
     } else if (currentMarker === "O") {
-      console.log("Player-2(O) has won the game!");
+      paraDisplay.textContent = "P2(O) has won the Game!";
     }
   }
+  playBtn.textContent = "Play again";
+  btnArea.appendChild(playBtn);
 }
 
 playBtn.addEventListener("click", () => playGame());
