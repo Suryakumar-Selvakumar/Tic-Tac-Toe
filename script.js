@@ -1,3 +1,14 @@
+const btnArea = document.querySelector(".buttons");
+
+const playBtn = document.createElement("button");
+playBtn.setAttribute("class", "play-btn");
+playBtn.textContent = "Play";
+
+const paraDisplay = document.createElement("p");
+paraDisplay.setAttribute("id", "para-display");
+
+btnArea.append(playBtn, paraDisplay);
+
 const gameBoard = (function () {
   let board = [
     ["", "", ""],
@@ -106,7 +117,7 @@ function playerCreator(marker) {
   return { setMarker, getMarkerPosition };
 }
 
-(function playGame() {
+function playGame() {
   let player = "p1";
   const player1 = playerCreator("X");
   const player2 = playerCreator("O");
@@ -142,4 +153,6 @@ function playerCreator(marker) {
       console.log("Player-2(O) has won the game!");
     }
   }
-})();
+}
+
+playBtn.addEventListener("click", () => playGame());
