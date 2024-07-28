@@ -101,12 +101,10 @@ function playerCreator(marker) {
 }
 
 paraDisplay.textContent = "Click Play! P1: X | P2: O";
-
-// function playGame() {
-//   do {} while (!winStatus && !tieStatus);
-// }
+let playAgainStatus = true;
 
 playBtn.addEventListener("click", () => {
+  btnArea.removeChild(playBtn);
   gameBoardContainer.appendChild(gameBoardDiv);
   gameBoard.clearBoard();
   for (const child of gameBoardDiv.children) {
@@ -114,54 +112,67 @@ playBtn.addEventListener("click", () => {
   }
   paraDisplay.textContent =
     "Game Begins! It's P1's turn, Click a tile to place 'X'";
+  playAgainStatus = true;
 });
 
 let player = "p1";
 let row, column;
 
-gameBoardContainer.addEventListener("click", (event) => {
+gameBoardDiv.addEventListener("click", (event) => {
   const player1 = playerCreator("X");
   const player2 = playerCreator("O");
-  btnArea.removeChild(playBtn);
   let winStatus = false;
   let tieStatus = false;
   let currentMarker = "";
 
-  if (event.target.tagName === "DIV") {
-    row = event.target.getAttribute("data-row");
-    column = event.target.getAttribute("data-column");
+  if (playAgainStatus === true) {
+    if (event.target.tagName === "DIV") {
+      row = event.target.getAttribute("data-row");
+      column = event.target.getAttribute("data-column");
 
-    if (event.target.textContent === "X" || event.target.textContent === "O") {
-      paraDisplay.textContent = "Oops, Tile Occupied! Click another tile";
-    } else {
-      if (player === "p1") {
-        event.target.textContent = "X";
-        currentMarker = player1.setMarker();
-        gameBoard.insertMarker(player, row, column);
-      } else if (player === "p2") {
-        event.target.textContent = "O";
-        currentMarker = player2.setMarker();
-        gameBoard.insertMarker(player, row, column);
+      if (
+        event.target.textContent === "X" ||
+        event.target.textContent === "O"
+      ) {
+        paraDisplay.textContent = "Oops, Tile Occupied! Click another tile";
+      } else {
+        if (player === "p1") {
+          event.target.textContent = "X";
+          currentMarker = player1.setMarker();
+          gameBoard.insertMarker(player, row, column);
+        } else if (player === "p2") {
+          event.target.textContent = "O";
+          currentMarker = player2.setMarker();
+          gameBoard.insertMarker(player, row, column);
+        }
+        winStatus = gameBoard.winCheck(currentMarker, row, column);
+        tieStatus = gameBoard.tieCheck(winStatus);
+        player = gameBoard.switchTurn(player);
+        if (player === "p1") {
+          paraDisplay.textContent = "P1's turn, Click a tile to place 'X'";
+        } else if (player === "p2") {
+          paraDisplay.textContent = "P2's turn, Click a tile to place 'O'";
+        }
       }
-      winStatus = gameBoard.winCheck(currentMarker, row, column);
-      tieStatus = gameBoard.tieCheck(winStatus);
-      player = gameBoard.switchTurn(player);
-      if (player === "p1") {
-        paraDisplay.textContent = "P1's turn, Click a tile to place 'X'";
-      } else if (player === "p2") {
-        paraDisplay.textContent = "P2's turn, Click a tile to place 'O'";
+      if (tieStatus === true) {
+        paraDisplay.textContent = "It's a Tie! Click any tile to play again!";
+        playAgainStatus = false;
+      } else if (winStatus === true) {
+        playAgainStatus = false;
+        if (currentMarker === "X") {
+          paraDisplay.textContent =
+            "P1(X) has won the Game! Click any tile to play again!";
+        } else if (currentMarker === "O") {
+          paraDisplay.textContent =
+            "P2(O) has won the Game! Click any tile to play again!";
+        }
       }
     }
-    if (tieStatus === true) {
-      paraDisplay.textContent = "It's a Tie!";
-    } else if (winStatus === true) {
-      if (currentMarker === "X") {
-        paraDisplay.textContent = "P1(X) has won the Game!";
-      } else if (currentMarker === "O") {
-        paraDisplay.textContent = "P2(O) has won the Game!";
-      }
-    }
+  } else {
     playBtn.textContent = "Play again";
+    paraDisplay.textContent = "";
+    playBtn.style.marginTop = "-1rem";
     btnArea.appendChild(playBtn);
+    gameBoardContainer.removeChild(gameBoardDiv);
   }
 });

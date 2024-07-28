@@ -1,6 +1,12 @@
+@font-face {
+  font-family: "tic-tac-toe";
+  src: url(fonts/TicTacToe.woff);
+}
+
 * {
   margin: 0;
   padding: 0;
+  font-family: "tic-tac-toe";
 }
 
 body {
@@ -13,6 +19,43 @@ body {
 
 .header {
   grid-area: header;
+  background-color: #7371fc;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 550;
+  font-size: clamp(1.25rem, 3vw + 0.5rem, 2rem);
+  color: white;
+  padding: 1rem 0 1rem 0;
+}
+
+.buttons {
+  grid-area: buttons;
+  background-color: #a594f9;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-weight: 550;
+  font-size: clamp(1.25rem, 3vw + 0.5rem, 1.75rem);
+  color: white;
+  padding: 1rem 0 1rem 0;
+  gap: 1rem;
+}
+
+.play-btn {
+  width: 300px;
+  font-weight: 550;
+  font-size: clamp(1.25rem, 3vw + 0.5rem, 1.75rem);
+  color: white;
+  background-color: #7371fc;
+  padding: 0.5rem;
+  border: none;
+  cursor: pointer;
+}
+
+.play-btn:hover {
+  background-color: #5451f8;
 }
 
 .content {
@@ -21,17 +64,15 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-}
-
-.buttons {
-  grid-area: buttons;
+  background-color: #f5efff;
 }
 
 .game-board {
   display: grid;
   width: 600px;
   height: 600px;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 200px 200px 200px;
+  grid-template-rows: 200px 200px 200px;
 }
 
 .board-tile {
@@ -40,6 +81,9 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+  font-weight: 550;
+  font-size: 4rem;
+  color: white;
 }
 
 .board-tile:nth-child(3n) {
@@ -50,7 +94,10 @@ body {
   border-bottom: 1px solid black;
 }
 
-.board-tile > p {
-  font-weight: 550;
-  font-size: 3rem;
+.board-tile:nth-child(even) {
+  background-color: #a594f9;
+}
+
+.board-tile:nth-child(odd) {
+  background-color: #7371fc;
 }
