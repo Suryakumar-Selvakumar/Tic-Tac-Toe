@@ -107,9 +107,6 @@ playBtn.addEventListener("click", () => {
   btnArea.removeChild(playBtn);
   gameBoardContainer.appendChild(gameBoardDiv);
   gameBoard.clearBoard();
-  for (const child of gameBoardDiv.children) {
-    child.textContent = "";
-  }
   paraDisplay.textContent =
     "Game Begins! It's P1's turn, Click a tile to place 'X'";
   playAgainStatus = true;
@@ -155,16 +152,16 @@ gameBoardDiv.addEventListener("click", (event) => {
         }
       }
       if (tieStatus === true) {
-        paraDisplay.textContent = "It's a Tie! Click any tile to play again!";
+        paraDisplay.textContent = "It's a Tie! Click any tile to reset!";
         playAgainStatus = false;
       } else if (winStatus === true) {
         playAgainStatus = false;
         if (currentMarker === "X") {
           paraDisplay.textContent =
-            "P1(X) has won the Game! Click any tile to play again!";
+            "P1(X) has won the Game! Click any tile to reset!";
         } else if (currentMarker === "O") {
           paraDisplay.textContent =
-            "P2(O) has won the Game! Click any tile to play again!";
+            "P2(O) has won the Game! Click any tile to reset!";
         }
       }
     }
@@ -173,6 +170,8 @@ gameBoardDiv.addEventListener("click", (event) => {
     paraDisplay.textContent = "";
     playBtn.style.marginTop = "-1rem";
     btnArea.appendChild(playBtn);
-    gameBoardContainer.removeChild(gameBoardDiv);
+    for (const child of gameBoardDiv.children) {
+      child.textContent = "";
+    }
   }
 });
