@@ -10,6 +10,9 @@ paraDisplay.setAttribute("id", "para-display");
 btnArea.append(playBtn, paraDisplay);
 
 const gameBoardContainer = document.querySelector(".content");
+const gameBoardDiv = document.querySelector(".game-board");
+
+gameBoardContainer.removeChild(gameBoardDiv);
 
 const gameBoard = (function () {
   let board = [
@@ -79,92 +82,86 @@ const gameBoard = (function () {
     }
   }
 
-  return { board, insertMarker, switchTurn, winCheck, tieCheck };
+  function clearBoard() {
+    for (let i = 0; i < board.length; i++) {
+      for (let j = 0; j < board.length; j++) {
+        board[i][j] = "";
+      }
+    }
+  }
+
+  return { insertMarker, switchTurn, winCheck, tieCheck, clearBoard };
 })();
 
 function playerCreator(marker) {
   function setMarker() {
     return marker;
   }
-
-  // function getMarkerPosition() {
-  //   gameBoardContainer.addEventListener("click", (event) => {
-  //     if (event.target.tagName === "DIV") {
-  //       const row = event.target.getAttribute("data-row");
-  //       const column = event.target.getAttribute("data-column");
-  //       return [row, column];
-  //     }
-  //   });
-  // let row, column;
-  // do {
-  //   row = parseInt(prompt("Enter Marker row: "), 10);
-  // } while (!(row >= 0 && row < 3) && !row === null);
-  // do {
-  //   column = parseInt(prompt("Enter Marker column: "), 10);
-  // } while (!(column >= 0 && column < 3) && !column === null);
-  // return [row, column];
-  // }
-
   return { setMarker };
 }
+
+paraDisplay.textContent = "Click Play! P1: X | P2: O";
+
+// function playGame() {
+//   do {} while (!winStatus && !tieStatus);
+// }
+
+playBtn.addEventListener("click", () => {
+  gameBoardContainer.appendChild(gameBoardDiv);
+  gameBoard.clearBoard();
+  for (const child of gameBoardDiv.children) {
+    child.textContent = "";
+  }
+  paraDisplay.textContent =
+    "Game Begins! It's P1's turn, Click a tile to place 'X'";
+});
 
 let player = "p1";
 let row, column;
 
 gameBoardContainer.addEventListener("click", (event) => {
+  const player1 = playerCreator("X");
+  const player2 = playerCreator("O");
+  btnArea.removeChild(playBtn);
+  let winStatus = false;
+  let tieStatus = false;
+  let currentMarker = "";
+
   if (event.target.tagName === "DIV") {
     row = event.target.getAttribute("data-row");
     column = event.target.getAttribute("data-column");
+
     if (event.target.textContent === "X" || event.target.textContent === "O") {
       paraDisplay.textContent = "Oops, Tile Occupied! Click another tile";
     } else {
       if (player === "p1") {
         event.target.textContent = "X";
+        currentMarker = player1.setMarker();
+        gameBoard.insertMarker(player, row, column);
       } else if (player === "p2") {
         event.target.textContent = "O";
+        currentMarker = player2.setMarker();
+        gameBoard.insertMarker(player, row, column);
+      }
+      winStatus = gameBoard.winCheck(currentMarker, row, column);
+      tieStatus = gameBoard.tieCheck(winStatus);
+      player = gameBoard.switchTurn(player);
+      if (player === "p1") {
+        paraDisplay.textContent = "P1's turn, Click a tile to place 'X'";
+      } else if (player === "p2") {
+        paraDisplay.textContent = "P2's turn, Click a tile to place 'O'";
       }
     }
+    if (tieStatus === true) {
+      paraDisplay.textContent = "It's a Tie!";
+    } else if (winStatus === true) {
+      if (currentMarker === "X") {
+        paraDisplay.textContent = "P1(X) has won the Game!";
+      } else if (currentMarker === "O") {
+        paraDisplay.textContent = "P2(O) has won the Game!";
+      }
+    }
+    playBtn.textContent = "Play again";
+    btnArea.appendChild(playBtn);
   }
 });
-
-paraDisplay.textContent = "Click Play! P1: X | P2: O";
-
-function playGame() {
-  btnArea.removeChild(playBtn);
-
-  const player1 = playerCreator("X");
-  const player2 = playerCreator("O");
-  let winStatus = false;
-  let tieStatus = false;
-  let currentMarker = "";
-
-  do {
-    if (player === "p1") {
-      paraDisplay.textContent = "P1's turn, Click a tile to place 'X'";
-      currentMarker = player1.setMarker();
-      gameBoard.insertMarker(player, row, column);
-    } else if (player === "p2") {
-      paraDisplay.textContent = "P2's turn, Click a tile to place 'O'";
-      currentMarker = player2.setMarker();
-      gameBoard.insertMarker(player, row, column);
-    }
-
-    winStatus = gameBoard.winCheck(currentMarker, row, column);
-    tieStatus = gameBoard.tieCheck(winStatus);
-    player = gameBoard.switchTurn(player);
-  } while (!winStatus && !tieStatus);
-
-  if (tieStatus === true) {
-    paraDisplay.textContent = "It's a Tie!";
-  } else {
-    if (currentMarker === "X") {
-      paraDisplay.textContent = "P1(X) has won the Game!";
-    } else if (currentMarker === "O") {
-      paraDisplay.textContent = "P2(O) has won the Game!";
-    }
-  }
-  playBtn.textContent = "Play again";
-  btnArea.appendChild(playBtn);
-}
-
-playBtn.addEventListener("click", () => playGame());
